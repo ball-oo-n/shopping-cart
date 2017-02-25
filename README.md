@@ -14,3 +14,4 @@ Type `shopping-cart -h` to view usage format
 ```
 shopping-cart -add ult_small/2,ult_large/2
 ```
+![alt example.png] (https://github.com/ball-oo-n/shopping-cart/blob/master/example.png)
