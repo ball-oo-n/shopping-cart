@@ -11,5 +11,5 @@ type Rule interface {
 var PricingRules []Rule
 
 func init() {
-	PricingRules = []Rule{ULTLRule{}, ULTMRule{}, ULTSRule{}}
+	PricingRules = []Rule{ULTLRule{}, ULTMRule{}, ULTSRule{}, PromoCodeRule{}}
 }

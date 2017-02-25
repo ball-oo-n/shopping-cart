@@ -12,9 +12,9 @@ type ULTMRule struct {
 //Apply struct
 func (r ULTMRule) Apply(items *map[string]*shop.Item) {
 	code := "ult_medium"
-	item, ok := (*items)[code]
+	item, isSatisfied := (*items)[code]
 
-	if ok {
+	if isSatisfied {
 		item.TotalPrice = c.Catalogue[code].Price * float32(item.Quantity)
 
 		var qty int

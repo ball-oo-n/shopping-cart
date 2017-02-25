@@ -1,9 +1,13 @@
 package cart_test
 
 import (
+	"bufio"
+	"math"
+	"os"
 	"testing"
 
 	. "github.com/ball-oo-n/shopping-cart/cart"
+	"github.com/ball-oo-n/shopping-cart/catalogue"
 	r "github.com/ball-oo-n/shopping-cart/rules"
 	"github.com/ball-oo-n/shopping-cart/shop"
 )
@@ -12,6 +16,12 @@ var actItems []shop.Item
 var expItemLen int
 var expItems map[string]*shop.Item
 var cart ShoppingCart
+
+func init() {
+	file, _ := os.Open("../catalogue.txt")
+	defer file.Close()
+	catalogue.Load(bufio.NewReader(file))
+}
 
 func initTestData() {
 	actItems = []shop.Item{
@@ -86,8 +96,8 @@ func TestShoppingCart1(t *testing.T) {
 			if actItem.Quantity != expItems[code].Quantity {
 				t.Errorf("Test FAILED. Actual: %v Expected: %v", actItem.Quantity, expItems[code].Quantity)
 			}
-			if actItem.TotalPrice != expItems[code].TotalPrice {
-				t.Errorf("Test FAILED. Actual: %v Expected: %v", actItem.TotalPrice, expItems[code].TotalPrice)
+			if math.Floor(float64(actItem.TotalPrice*100.00))/100.00 != float64(expItems[code].TotalPrice) {
+				t.Errorf("Test FAILED. Actual: %v Expected: %v", math.Floor(float64(actItem.TotalPrice)*100.00)/100, float64(expItems[code].TotalPrice))
 			}
 		} else {
 			t.Error("Test FAILED. Actual: nil Expected: not nil")
@@ -95,14 +105,7 @@ func TestShoppingCart1(t *testing.T) {
 	}
 }
 
-func TestShoppingCart2(t *testing.T) {
-	expCode := "i<3amaysim"
-	cart.AddPromo("i<3amaysim")
-	if cart.PromoCode != expCode {
-		t.Errorf("Test FAILED. Actual: %v Expected: %v", cart.PromoCode, expCode)
-	}
-}
-
+//
 func TestCalculate1(t *testing.T) {
 	//test data
 	p := []float32{24.90, 29.90, 44.90, 0}
@@ -137,16 +140,16 @@ func TestCalculate2(t *testing.T) {
 		"1gb":        &shop.Item{Quantity: 1, ItemCode: "1gb", TotalPrice: p[3]},
 	}
 
-	var expTotal float32
+	var expTotal float64
 	expTotal = 99.7 - (99.7 * 0.1)
 	var cart ShoppingCart
 	cart.Items = items
-	cart.PromoCode = "I<3AMAYSIM"
+	cart.AddPromo("I<3AMAYSIM")
 	cart.PricingRules = r.PricingRules
 
 	CalculateTotal(&cart)
 	//Assertion
-	if cart.Total != expTotal {
+	if math.Floor(float64(cart.Total*100.00))/100.00 != expTotal {
 		t.Errorf("Test FAILED. Actual: %v Expected: %v", cart.Total, expTotal)
 	}
 }
@@ -162,37 +165,16 @@ func TestCalculate3(t *testing.T) {
 		"1gb":        &shop.Item{Quantity: 1, ItemCode: "1gb", TotalPrice: p[3]},
 	}
 
-	var expTotal float32
+	var expTotal float64
 	expTotal = 99.7
 	var cart ShoppingCart
 	cart.Items = items
-	cart.PromoCode = "iloveamaysim"
+	cart.AddPromo("i<3AMAYSIM")
+	cart.PricingRules = r.PricingRules
 
 	CalculateTotal(&cart)
 	//Assertion
-	if cart.Total != expTotal {
-		t.Errorf("Test FAILED. Actual: %v Expected: %v", cart.Total, expTotal)
-	}
-}
-
-//Case2: with invalid promo code
-func TestCalculate5(t *testing.T) {
-	//test data
-	p := []float32{24.90, 9.90}
-	items := map[string]*shop.Item{
-		"ult_small": &shop.Item{Quantity: 1, ItemCode: "ult_small", TotalPrice: p[0]},
-		"1gb":       &shop.Item{Quantity: 1, ItemCode: "1gb", TotalPrice: p[1]},
-	}
-
-	var expTotal float32
-	expTotal = 31.32
-	var cart ShoppingCart
-	cart.Items = items
-	cart.PromoCode = "I<3AMAYSIM"
-
-	CalculateTotal(&cart)
-	//Assertion
-	if cart.Total != expTotal {
+	if math.Floor(float64(cart.Total*100.00))/100.00 != expTotal {
 		t.Errorf("Test FAILED. Actual: %v Expected: %v", cart.Total, expTotal)
 	}
 }

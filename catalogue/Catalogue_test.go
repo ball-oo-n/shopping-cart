@@ -1,13 +1,20 @@
 package catalogue_test
 
 import (
+	"bufio"
+	"os"
 	"testing"
 
 	. "github.com/ball-oo-n/shopping-cart/catalogue"
 )
 
+func init() {
+	file, _ := os.Open("../catalogue.txt")
+	defer file.Close()
+	Load(bufio.NewReader(file))
+}
+
 func TestLoadCatalogue(t *testing.T) {
-	catalogue := LoadCatalogue()
 	expMap := map[string]Item{
 		"ult_small":  Item{"ult_small", "Unlimited 1GB", 24.90},
 		"ult_medium": Item{"ult_medium", "Unlimited 2GB", 29.90},
@@ -15,7 +22,7 @@ func TestLoadCatalogue(t *testing.T) {
 		"1gb":        Item{"1gb", "1 GB Data-pack", 9.90},
 	}
 	for code := range expMap {
-		if actItem := catalogue[code]; actItem != nil {
+		if actItem := Catalogue[code]; actItem != nil {
 			if actItem.ItemCode != expMap[code].ItemCode {
 				t.Errorf("Test FAILED. Actual: %v Expected: %v", actItem.ItemCode, expMap[code].ItemCode)
 			}

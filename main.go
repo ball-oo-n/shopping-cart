@@ -14,7 +14,6 @@ import (
 
 	s "github.com/ball-oo-n/shopping-cart/cart"
 	c "github.com/ball-oo-n/shopping-cart/catalogue"
-	p "github.com/ball-oo-n/shopping-cart/promotions"
 	r "github.com/ball-oo-n/shopping-cart/rules"
 	"github.com/ball-oo-n/shopping-cart/shop"
 )
@@ -23,6 +22,12 @@ var m = flag.Bool("menu", false, "menu")
 var a = flag.String("add", "", "add <item_code_1>/<qty_1>,<item_code_2>/<qty_2>,...,<item_code_n>/<qty_n>")
 
 var shoppingCart s.ShoppingCart
+
+func init() {
+	file, _ := os.Open("catalogue.txt")
+	defer file.Close()
+	c.Load(bufio.NewReader(file))
+}
 
 func main() {
 	shoppingCart = s.ShoppingCart{Items: make(map[string]*shop.Item)}
@@ -33,7 +38,7 @@ func main() {
 		// display menu.
 		for value := range c.Catalogue {
 			item := c.Catalogue[value]
-			fmt.Printf("[%v] %v, $%v\n", shop.item.ItemCode, shop.item.ItemName, shop.item.Price)
+			fmt.Printf("[%v] %v, $%v\n", item.ItemCode, item.ItemName, item.Price)
 		}
 	}
 
@@ -48,11 +53,7 @@ func main() {
 			promoCode, _ := reader.ReadString('\n')
 			promoCode = strings.TrimSpace(promoCode)
 
-			if _, exists := p.PromoCodes[promoCode]; exists {
-				shoppingCart.AddPromo(promoCode)
-			} else {
-				fmt.Println("Promo code invalid. No promo code applied.")
-			}
+			shoppingCart.AddPromo(promoCode)
 
 		}
 		cartItems := strings.Split(*a, ",")
@@ -71,11 +72,14 @@ func main() {
 		s.CalculateTotal(&shoppingCart)
 
 		fmt.Println("Shopping Cart Items:")
-		for indx := range shoppingCart.Items {
-			name := c.Catalogue[shoppingCart.Items[indx].ItemCode].ItemName
-			qty := shoppingCart.Items[indx].Quantity
-			fmt.Printf("%v x%v", name, qty)
-			fmt.Println()
+		for k, v := range shoppingCart.Items {
+			var name string
+			if value, exists := c.Catalogue[k]; exists {
+				name = value.ItemName
+				qty := v.Quantity
+				fmt.Printf("%v x%v", name, qty)
+				fmt.Println()
+			}
 		}
 
 		fmt.Printf("Shopping Cart Total: $%.02f\n", shoppingCart.Total)
