@@ -1,7 +1,7 @@
 # Shopping Cart
 
 ## Installation
-Type `go get github.com/ball-oo-n/shopping-cart`
+Type `go get github.com/joblepia/shopping-cart`
 
 ## How To
 Type `shopping-cart -menu` to view menu
@@ -14,4 +14,4 @@ Type `shopping-cart -h` to view usage format
 ```
 shopping-cart -add ult_small/2,ult_large/2
 ```
-![alt example.png] (https://github.com/ball-oo-n/shopping-cart/blob/master/example.png)
+![alt example.png] (https://github.com/joblepia/shopping-cart/blob/master/example.png)
